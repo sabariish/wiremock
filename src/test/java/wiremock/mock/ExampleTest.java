@@ -35,10 +35,10 @@ public class ExampleTest {
         //configureFor("ss-wiremock.herokuapp.com", 26351);
 		//wireMockServer.start();
 		
-/*		stubFor(get(urlEqualTo("/some/thing"))
+		stubFor(get(urlEqualTo("/some/thing"))
 	            .willReturn(aResponse()
 	                .withHeader("Content-Type", "text/plain")
-	                .withBody("Hello world1!")));*/
+	                .withBody("Hello world1!")));
 		
 /*		stubFor(get(urlEqualTo("/v1/employees"))
 	            .willReturn(aResponse().proxiedFrom("http://dummy.restapiexample.com/api")
