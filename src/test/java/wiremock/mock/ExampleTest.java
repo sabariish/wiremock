@@ -12,11 +12,12 @@ import com.jayway.restassured.response.Response;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 public class ExampleTest {
     //public static final int WIREMOCK_PORT_NUMBER = 8089;
     //public static final int WIREMOCK_SECURE_PORT_NUMBER = 8043;
@@ -29,6 +30,7 @@ public class ExampleTest {
 		//WireMockServer wireMockServer = new WireMockServer(wireMockConfig().httpsPort(WIREMOCK_SECURE_PORT_NUMBER).port(WIREMOCK_PORT_NUMBER));
 		//WireMockServer wireMockServer = new WireMockServer(8081);
 		//wireMockServer.start();
+		
         configureFor(WIREMOCK_HOST, 80);
         //configureFor("ss-wiremock.herokuapp.com", 26351);
 		//wireMockServer.start();
@@ -69,6 +71,37 @@ public class ExampleTest {
 	            .contentType(ContentType.TEXT);
 
 		//assertThat(200, is(200));
+	}
+	
+	//Statefull request
+	@Test
+	public void exampleScenario() {
+
+        configureFor(WIREMOCK_HOST, 80);
+
+		
+		stubFor(get(urlEqualTo("/todo/items")).inScenario("To do list")
+	            .whenScenarioStateIs("Started")
+	            .willReturn(aResponse()
+	                    .withBody("<items>" +
+	                            "   <item>Buy milk</item>" +
+	                            "</items>")));
+
+	    stubFor(post(urlEqualTo("/todo/items")).inScenario("To do list")
+	            .whenScenarioStateIs("Started")
+	            .withRequestBody(containing("Cancel newspaper subscription"))
+	            .willReturn(aResponse().withStatus(201))
+	            .willSetStateTo("Cancel newspaper item added"));
+
+	    stubFor(get(urlEqualTo("/todo/items")).inScenario("To do list")
+	            .whenScenarioStateIs("Cancel newspaper item added")
+	            .willReturn(aResponse()
+	                    .withBody("<items>" +
+	                            "   <item>Buy milk</item>" +
+	                            "   <item>Cancel newspaper subscription</item>" +
+	                            "</items>")));
+	    
+	  System.out.println("");  
 	}
 	
 }
